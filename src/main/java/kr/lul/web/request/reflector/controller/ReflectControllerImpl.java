@@ -6,8 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.time.ZonedDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -25,11 +24,13 @@ import static java.util.Collections.list;
    * @param model
    * @return
    */
-  private String reflect(final HttpServletRequest req, final Model model) throws MalformedURLException {
+  @Override
+  public String reflect(final HttpServletRequest req, final Model model) {
     // URL
-    URL url = new URL(req.getRequestURL().toString());
     model.addAttribute("method", req.getMethod());
-    model.addAttribute("url", url);
+    model.addAttribute("url", req.getRequestURL().toString());
+    model.addAttribute("query", req.getQueryString());
+    model.addAttribute("timestamp", ZonedDateTime.now());
 
     // HEADER
     Map<String, String> headers = new LinkedHashMap<>();
@@ -38,33 +39,5 @@ import static java.util.Collections.list;
     model.addAttribute("params", req.getParameterMap());
 
     return "reflect/basic";
-  }
-
-  /**
-   * @param req
-   * @param model
-   * @return
-   */
-  @Override
-  public String get(final HttpServletRequest req, final Model model) {
-    try {
-      return reflect(req, model);
-    } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  /**
-   * @param req
-   * @param model
-   * @return
-   */
-  @Override
-  public String post(HttpServletRequest req, Model model) {
-    try {
-      return reflect(req, model);
-    } catch (MalformedURLException e) {
-      throw new RuntimeException(e);
-    }
   }
 }
